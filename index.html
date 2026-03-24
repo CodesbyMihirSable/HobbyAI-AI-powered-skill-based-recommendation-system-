@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HobbyAI | Skill-Based Recommendation System</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body class="light-theme">
+    <!-- Navigation -->
+    <nav class="glass-nav">
+        <div class="container nav-content">
+            <div class="logo" id="go-home">
+                <span class="logo-icon">✨</span>
+                <span class="logo-text">HobbyAI</span>
+            </div>
+            <div class="nav-actions">
+                <button id="theme-toggle" class="icon-btn" title="Toggle Theme">
+                    <span id="theme-icon">🌙</span>
+                </button>
+                <button id="reset-app" class="btn btn-secondary btn-sm">Retake Quiz</button>
+            </div>
+        </div>
+    </nav>
+
+    <main id="app-container" class="container">
+        <!-- Landing Page -->
+        <section id="landing-view" class="view active">
+            <div class="hero">
+                <h1 class="animate-up">Discover Your Next <span class="gradient-text">Passion</span></h1>
+                <p class="animate-up delay-1">Our AI-driven engine analyzes your skills, personality, and constraints to
+                    find the perfect hobby for you.</p>
+                <div class="hero-actions animate-up delay-2">
+                    <button id="start-quiz-btn" class="btn btn-primary btn-lg">Find My Hobby</button>
+                    <button id="show-samples-btn" class="btn btn-outline btn-lg">Explore Hobbies</button>
+                </div>
+            </div>
+
+            <div class="sample-section animate-up delay-3">
+                <h3>Popular Hobbies</h3>
+                <div id="sample-hobbies-grid" class="hobby-grid">
+                    <!-- Sample cards injected here -->
+                </div>
+            </div>
+        </section>
+
+        <!-- Quiz Page -->
+        <section id="quiz-view" class="view">
+            <div class="quiz-container glass-card">
+                <div class="quiz-header">
+                    <div class="progress-wrapper">
+                        <div class="progress-bar-bg">
+                            <div id="quiz-progress" class="progress-bar-fill" style="width: 10%;"></div>
+                        </div>
+                        <span id="quiz-step-text">Question 1 of 10</span>
+                    </div>
+                </div>
+
+                <div id="question-container" class="question-content">
+                    <h2 id="question-text">Loading question...</h2>
+                    <div id="options-grid" class="options-grid">
+                        <!-- Options injected here -->
+                    </div>
+                </div>
+
+                <div class="quiz-footer">
+                    <button id="prev-btn" class="btn btn-secondary" disabled>Back</button>
+                    <!-- Next is handled by option click -->
+                </div>
+            </div>
+        </section>
+
+        <!-- Results Page -->
+        <section id="results-view" class="view">
+            <div class="results-header">
+                <h1>Your Personalized <span class="gradient-text">Matches</span></h1>
+                <div class="user-profile-badge" id="user-personality-badge">
+                    <span class="badge-icon">🧠</span>
+                    <span class="badge-type">Loading...</span>
+                </div>
+            </div>
+
+            <div id="results-grid" class="results-grid">
+                <!-- Top 5 cards injected here -->
+            </div>
+
+            <div class="analytics-preview glass-card">
+                <div class="analytics-content">
+                    <h3>Compatibility Dashboard</h3>
+                    <div id="analytics-charts" class="charts-container">
+                        <!-- Simple charts here -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Hobby Detail Page -->
+        <section id="detail-view" class="view">
+            <div id="hobby-detail-content">
+                <!-- Detail content injected here -->
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2026 HobbyAI Recommendation System. Built by Mihir Sable .</p>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="js/hobbies.js"></script>
+    <script src="js/engine.js"></script>
+    <script src="js/app.js"></script>
+</body>
+
+</html>
