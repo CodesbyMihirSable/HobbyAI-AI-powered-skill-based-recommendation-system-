@@ -335,3 +335,5 @@ const hobbies = [
 if (typeof module !== 'undefined' && module.exports) {
     module.exports = hobbies;
 }
+// Expose to window for browser usage
+window.hobbies = hobbies;

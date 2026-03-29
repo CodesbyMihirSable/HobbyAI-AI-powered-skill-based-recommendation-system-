@@ -7,7 +7,9 @@
     <title>HobbyAI Advanced | Skill-Based Recommendation System</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
 
@@ -21,7 +23,7 @@
             </div>
             <div class="nav-actions">
                 <button id="voice-search-btn" class="icon-btn tooltip" title="Voice Search">
-                    <span>🎤</span>
+                    <!--span>🎤</span-->
                 </button>
                 <button id="theme-toggle" class="icon-btn" title="Toggle Theme">
                     <span id="theme-icon">☀️</span>
@@ -33,18 +35,20 @@
 
     <!-- Context Info Bar -->
     <div id="context-bar" class="context-bar glass-panel hidden">
-        <span>📍 Environment Context: Weather: <strong id="ctx-weather">Detecting...</strong> | Time: <strong id="ctx-time">...</strong></span>
+        <span>📍 Environment Context: Weather: <strong id="ctx-weather">Detecting...</strong> | Time: <strong
+                id="ctx-time">...</strong></span>
     </div>
 
     <main id="app-container" class="container">
         <!-- Landing Page -->
         <section id="landing-view" class="view active">
             <div class="hero">
-                <div class="badge-pill">Advanced Edition v2.0</div>
+                <!--div class="badge-pill">Advanced Edition v2.0</div-->
                 <h1 class="animate-up">Discover Your Next <span class="gradient-text">Passion</span> contextually.</h1>
-                <p class="animate-up delay-1">Powered by Machine Learning, Real-Time Context, and Reinforcement Learning to find your perfect hobby fit.</p>
+                <p class="animate-up delay-1">Powered by Machine Learning, Real-Time Context, and Reinforcement Learning
+                    to find your perfect hobby fit.</p>
                 <div class="hero-actions animate-up delay-2">
-                    <button id="start-quiz-btn" class="btn btn-primary btn-lg">Start AI Assessment</button>
+                    <button id="start-quiz-btn" class="btn btn-primary btn-lg">Start Assessment</button>
                 </div>
             </div>
 
@@ -91,7 +95,7 @@
                 <h1>Your Personalized <span class="gradient-text">Matches</span></h1>
                 <div class="user-profile-badge" id="user-personality-badge">
                     <span class="badge-icon">🧠</span>
-                    <span class="badge-type">Loading...</span>
+
                 </div>
             </div>
 
@@ -119,7 +123,7 @@
                     </div>
                     <small><span id="dash-xp">50</span> / <span id="dash-xp-next">100</span> XP to next level</small>
                 </div>
-                
+
                 <div class="dash-grid mt-4">
                     <div class="glass-card">
                         <h3>Your Badges</h3>
@@ -146,7 +150,8 @@
         </div>
         <div class="chatbot-body">
             <div id="chat-messages" class="chat-messages">
-                <div class="msg system">Hi! I can suggest hobbies based on what you type. E.g., "Suggest a creative hobby for the evening"</div>
+                <div class="msg system">Hi! I can suggest hobbies based on what you type. E.g., "Suggest a creative
+                    hobby for the evening"</div>
             </div>
             <div class="chat-input-area">
                 <input type="text" id="chat-input" placeholder="Type or use mic..." autocomplete="off">
@@ -184,7 +189,7 @@
 
     <footer class="footer">
         <div class="container">
-            <p>&copy; 2026 HobbyAI Advanced Edition. Engineered dynamically for production workflows.</p>
+            <p>&copy; 2026 HobbyAI - Built by Mihir Sable.</p>
         </div>
     </footer>
 

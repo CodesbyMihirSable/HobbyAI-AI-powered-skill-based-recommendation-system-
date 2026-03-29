@@ -31,22 +31,27 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // --- Init App ---
     async function initApp() {
-        // Fetch context API
-        contextData = await window.ContextAPI.fetchRealtimeContext();
-        
-        // Update Context Bar UI
-        const ctxBar = document.getElementById('context-bar');
-        const ctxWeather = document.getElementById('ctx-weather');
-        const ctxTime = document.getElementById('ctx-time');
-        
-        if (contextData) {
-            ctxBar.classList.remove('hidden');
-            ctxWeather.textContent = `${contextData.weather} ${contextData.temperature ? '('+contextData.temperature+'°C)' : ''}`;
-            ctxTime.textContent = contextData.timeOfDay.charAt(0).toUpperCase() + contextData.timeOfDay.slice(1);
-        }
-
-        updateAuthUI();
+        // Bind events immediately so buttons work while loading context
         setupEventListeners();
+        updateAuthUI();
+
+        // Fetch context API (doesn't block UI)
+        try {
+            contextData = await window.ContextAPI.fetchRealtimeContext();
+            
+            // Update Context Bar UI
+            const ctxBar = document.getElementById('context-bar');
+            const ctxWeather = document.getElementById('ctx-weather');
+            const ctxTime = document.getElementById('ctx-time');
+            
+            if (contextData) {
+                ctxBar.classList.remove('hidden');
+                ctxWeather.textContent = `${contextData.weather} ${contextData.temperature ? '('+contextData.temperature+'°C)' : ''}`;
+                ctxTime.textContent = contextData.timeOfDay.charAt(0).toUpperCase() + contextData.timeOfDay.slice(1);
+            }
+        } catch(e) {
+            console.warn("Context API failed to load", e);
+        }
     }
 
     // --- UI Routing ---
@@ -348,34 +353,106 @@ document.addEventListener('DOMContentLoaded', async () => {
         const box = document.getElementById('chat-messages');
         const d = document.createElement('div');
         d.className = `msg ${sender}`;
-        d.textContent = text;
+        
+        // Simple markdown-to-bold parsing
+        const formattedText = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+        d.innerHTML = formattedText;
+        
         box.appendChild(d);
         box.scrollTop = box.scrollHeight;
     }
 
     function processChatbotNLP(query) {
         const q = query.toLowerCase();
+        
+        // 1. Handle Conversational & System Queries
+        if (q.includes('level') || q.includes('xp') || q.includes('profile')) {
+            const user = window.AuthManager.currentUser;
+            if(!user) return appendChatMessage("You are not logged in! Please login to track your XP and Level.", 'system');
+            return appendChatMessage(`You are currently **Level ${user.level}** with **${user.xp} XP**. Keep exploring!`, 'system');
+        }
+
+        if (q.includes('hello') || q.includes('hi ') || q === 'hi' || q === 'hey') {
+            return appendChatMessage("Hello! I'm your AI hobby assistant. Tell me what kind of activity you're looking for! (e.g. 'I want a cheap outdoor hobby' or 'something creative')", 'system');
+        }
+
+        // 2. Advanced Keyword & NLP Mapping
+        const keywords = {
+            'Creative Arts': ['creative', 'art', 'draw', 'paint', 'write', 'craft', 'photo', 'make', 'sketch'],
+            'Technology': ['tech', 'code', 'computer', 'digital', 'program', 'software', 'ai', 'robot'],
+            'Fitness & Outdoors': ['active', 'fitness', 'sport', 'workout', 'sweat', 'outdoor', 'outside', 'hike', 'climb'],
+            'Social & Leisure': ['social', 'friends', 'group', 'game', 'board', 'party', 'people'],
+            'Lifestyle': ['cook', 'bake', 'food', 'garden', 'home', 'plant'],
+            'Music': ['music', 'instrument', 'play', 'song', 'sing', 'sound', 'guitar', 'piano']
+        };
+
         let targetCats = [];
-        
-        // Simple NLP Keyword matching
-        if (q.includes('creative') || q.includes('art')) targetCats.push('Creative Arts');
-        if (q.includes('tech') || q.includes('code') || q.includes('computer')) targetCats.push('Technology');
-        if (q.includes('active') || q.includes('fitness') || q.includes('sport')) targetCats.push('Fitness & Outdoors');
-        
+        for (const [cat, words] of Object.entries(keywords)) {
+            if (words.some(w => q.includes(w))) targetCats.push(cat);
+        }
+
         let filtered = window.hobbies;
+        
+        // 3. Category Filter
         if (targetCats.length > 0) {
-            filtered = filtered.filter(h => targetCats.includes(h.category) || targetCats.includes(h.category.split(' ')[0]));
+            filtered = filtered.filter(h => targetCats.some(c => h.category.includes(c)));
         }
 
-        if (q.includes('cheap') || q.includes('low budget') || q.includes('free')) {
-            filtered = filtered.filter(h => h.vector[1] < 0.4); 
+        // 4. Constraint Parsing (Budget, Time, Social)
+        if (q.includes('cheap') || q.includes('low budget') || q.includes('free') || q.includes('no money')) {
+            filtered = filtered.filter(h => h.vector[1] < 0.35); 
+        } else if (q.includes('expensive') || q.includes('premium')) {
+            filtered = filtered.filter(h => h.vector[1] >= 0.6); 
         }
 
-        if (filtered.length === 0) filtered = window.hobbies; // Fallback
+        if (q.includes('quick') || q.includes('little time') || q.includes('busy') || q.includes('fast')) {
+            filtered = filtered.filter(h => h.vector[0] < 0.4);
+        }
+
+        if (q.includes('alone') || q.includes('introvert') || q.includes('solo') || q.includes('by myself')) {
+            filtered = filtered.filter(h => h.vector[3] < 0.4);
+        }
+
+        // 5. Fallback or Selection
+        if (filtered.length === 0) {
+            return appendChatMessage("I couldn't find a perfect match for those exact constraints, but try taking the full **AI Assessment** for a deeper multidimensional analysis!", 'system');
+        }
         
-        const selection = filtered[Math.floor(Math.random() * filtered.length)];
+        // Randomize among best matches
+        filtered.sort(() => 0.5 - Math.random());
+        const selection = filtered[0];
         
-        appendChatMessage(`Based on your input, check out: ${selection.name}! It's a great match. Explore it in the AI quiz results!`, 'system');
+        appendChatMessage(`I found a great match: **${selection.name}**!`, 'system');
+        
+        // 6. Render Rich Interactive UI Card
+        const box = document.getElementById('chat-messages');
+        const cardMsg = document.createElement('div');
+        cardMsg.className = 'msg system chat-card glass-card';
+        cardMsg.style.padding = '12px';
+        cardMsg.style.marginTop = '4px';
+        cardMsg.style.borderLeft = '4px solid var(--brand-primary)';
+        
+        cardMsg.innerHTML = `
+            <h4 style="color:var(--text-primary); margin-bottom:4px;">${selection.name}</h4>
+            <span style="font-size:0.75rem; background:var(--brand-primary); color:white; padding:2px 8px; border-radius:12px;">${selection.category}</span>
+            <p style="font-size:0.85rem; margin:10px 0; color:var(--text-secondary);">
+                💰 ${selection.costEstimate.split(' ')[0]} <br>
+                ⏱ ${selection.timeCommitment}
+            </p>
+        `;
+        
+        const btn = document.createElement('button');
+        btn.className = 'btn btn-sm btn-primary w-full';
+        btn.textContent = 'View Challenge Details';
+        btn.onclick = () => {
+            // Collapse chatbot and open detail
+            document.getElementById('chatbot-widget').classList.add('collapsed');
+            showDetail(selection);
+        };
+        
+        cardMsg.appendChild(btn);
+        box.appendChild(cardMsg);
+        box.scrollTop = box.scrollHeight;
     }
 
     // --- Voice Recognition Setup ---
